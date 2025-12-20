@@ -1,3 +1,4 @@
+
 <!DOCTYPE html>
 <html>
 <head>
@@ -23,29 +24,24 @@
   <script>
     async function fetchStats() {
       try {
-        // Lien Raw permanent vers ton commit
-        const res = await fetch('https://raw.githubusercontent.com/younesand48-spec/Clash-coun/12fe29c9c0852a3db81adf5614531ce3f0469944/stats.txt');
+        // Remplace ce lien par le lien Raw permanent de ton fichier stats.txt
+        const res = await fetch('https://raw.githubusercontent.com/younesand48-spec/Clash-coun/Root/stats.txt');
         const text = await res.text();
 
-        // Extraire victoires et défaites
         const winMatch = text.match(/Victoires\s*:\s*(\d+)/i);
         const loseMatch = text.match(/Défaites\s*:\s*(\d+)/i);
         let wins = winMatch ? parseInt(winMatch[1]) : 0;
         let loses = loseMatch ? parseInt(loseMatch[1]) : 0;
         let total = wins + loses;
 
-        // Calcul winrate
         let rate = total > 0 ? Math.round((wins/total)*100) : 0;
 
-        // Barre de progression (10 blocs)
         let filled = total > 0 ? Math.round((wins/total)*10) : 0;
         let empty = 10 - filled;
         let bar = '🟩'.repeat(filled) + '⬛'.repeat(empty);
 
-        // Humeur selon winrate
         let humeur = rate > 60 ? '😎' : rate >= 40 ? '😐' : '😢';
 
-        // Affichage
         document.getElementById('stats').innerText = `🏆 Victoires : ${wins} | ❌ Défaites : ${loses} | 📊 Winrate : ${rate}%`;
         document.getElementById('bar').innerText = bar;
         document.getElementById('humeur').innerText = humeur;
@@ -58,7 +54,7 @@
     }
 
     fetchStats();
-    setInterval(fetchStats, 5000); // met à jour toutes les 5 secondes
+    setInterval(fetchStats, 5000);
   </script>
 </body>
 </html>
