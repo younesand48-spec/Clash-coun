@@ -1,0 +1,63 @@
+<!DOCTYPE html>
+<html>
+<head>
+  <title>Compteur Clash Royale</title>
+  <style>
+    body { 
+      font-family: Arial, sans-serif; 
+      text-align: center; 
+      padding: 50px; 
+      background: #1e1e1e; 
+      color: #ffffff; 
+    }
+    .stats { font-size: 28px; margin-bottom: 20px; }
+    .bar { font-size: 36px; }
+    .humeur { font-size: 40px; margin-top: 10px; }
+  </style>
+</head>
+<body>
+  <div class="stats" id="stats">Chargement...</div>
+  <div class="bar" id="bar">⬛⬛⬛⬛⬛⬛⬛⬛⬛⬛</div>
+  <div class="humeur" id="humeur">😐</div>
+
+  <script>
+    async function fetchStats() {
+      try {
+        const res = await fetch('https://raw.githubusercontent.com/younesand48-spec/Clash-coun/Root/stats.txt');
+        const text = await res.text();
+
+        // Extraire victoires et défaites depuis ton fichier stats.txt
+        const winMatch = text.match(/Victoires\s*:\s*(\d+)/i);
+        const loseMatch = text.match(/Défaites\s*:\s*(\d+)/i);
+        let wins = winMatch ? parseInt(winMatch[1]) : 0;
+        let loses = loseMatch ? parseInt(loseMatch[1]) : 0;
+        let total = wins + loses;
+
+        // Calcul winrate
+        let rate = total > 0 ? Math.round((wins/total)*100) : 0;
+
+        // Barre de progression (10 blocs)
+        let filled = total > 0 ? Math.round((wins/total)*10) : 0;
+        let empty = 10 - filled;
+        let bar = '🟩'.repeat(filled) + '⬛'.repeat(empty);
+
+        // Humeur selon winrate
+        let humeur = rate > 60 ? '😎' : rate >= 40 ? '😐' : '😢';
+
+        // Affichage
+        document.getElementById('stats').innerText = `🏆 Victoires : ${wins} | ❌ Défaites : ${loses} | 📊 Winrate : ${rate}%`;
+        document.getElementById('bar').innerText = bar;
+        document.getElementById('humeur').innerText = humeur;
+
+      } catch (e) {
+        document.getElementById('stats').innerText = "Erreur de connexion";
+        document.getElementById('bar').innerText = "⬛⬛⬛⬛⬛⬛⬛⬛⬛⬛";
+        document.getElementById('humeur').innerText = "😐";
+      }
+    }
+
+    fetchStats();
+    setInterval(fetchStats, 5000); // met à jour toutes les 5 secondes
+  </script>
+</body>
+</html>
