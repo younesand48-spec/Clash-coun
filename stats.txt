@@ -1,1 +1,4 @@
-
+9511
+8780
+9200
+$(eval t=`$(urlfetch https://raw.githubusercontent.com/younesand48-spec/Clash-coun/refs/heads/Root/stats.txt)`.split("\n"); s=9000; ["🏆 Compte principal : "+t[0]+" trophées "+(parseInt(t[0])>s?"😎 Top !":"😢 En baisse !"),"🏆 Compte secondaire : "+t[1]+" trophées "+(parseInt(t[1])>s?"😎 Top !":"😢 En baisse !"),"🏆 Compte tertiaire : "+t[2]+" trophées "+(parseInt(t[2])>s?"😎 Top !":"😢 En baisse !")].join("\n"))
