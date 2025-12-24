@@ -1,3 +1,4 @@
+
 <!DOCTYPE html>
 <html lang="fr">
 <head>
@@ -27,7 +28,7 @@
 
 <script>
 const url = "https://raw.githubusercontent.com/younesand48-spec/Clash-coun/refs/heads/Root/stats.txt";
-let lastStats = [0,0,0];
+let lastStats = [-1,-1,-1]; // Forcer le pulse dès le premier fetch
 
 function humour(value){
   if(value>9500) return "💪 Légende en devenir !";
