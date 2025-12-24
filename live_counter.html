@@ -1,74 +1,46 @@
-
 <!DOCTYPE html>
 <html lang="fr">
 <head>
 <meta charset="UTF-8">
-<title>Compteur Clash Royale Animé</title>
+<title>Clash Royale Stats</title>
 <style>
-  body { font-family: Arial, sans-serif; background: transparent; color: white; }
-  .compte { font-size: 24px; margin: 10px 0; }
-  .bar { width: 300px; height: 25px; background: #333; border-radius: 5px; overflow: hidden; display: inline-block; margin-left: 10px; vertical-align: middle; }
-  .fill { height: 100%; text-align: right; padding-right: 5px; font-weight: bold; line-height: 25px; transition: width 1s, background 0.3s; color: #000; }
-  #fill1 { background: #1abc9c; }
-  #fill2 { background: #e74c3c; }
-  #fill3 { background: #3498db; }
-  .pulse { animation: pulse 0.5s; }
-  @keyframes pulse {
-    0% { transform: scaleX(1); }
-    50% { transform: scaleX(1.05); }
-    100% { transform: scaleX(1); }
+  body {
+    font-family: Arial, sans-serif;
+    background: transparent;
+    color: #fff;
+    font-size: 24px;
+  }
+  .stat {
+    margin: 5px 0;
   }
 </style>
 </head>
 <body>
 
-<div class="compte" id="c1">C1: <span class="bar"><span class="fill" id="fill1"></span></span> <span id="emoji1"></span> <span id="humour1"></span></div>
-<div class="compte" id="c2">C2: <span class="bar"><span class="fill" id="fill2"></span></span> <span id="emoji2"></span> <span id="humour2"></span></div>
-<div class="compte" id="c3">C3: <span class="bar"><span class="fill" id="fill3"></span></span> <span id="emoji3"></span> <span id="humour3"></span></div>
+<div id="stats"></div>
 
 <script>
-const url = "https://raw.githubusercontent.com/younesand48-spec/Clash-coun/refs/heads/Root/stats.txt";
-let lastStats = [-1,-1,-1]; // Forcer le pulse dès le premier fetch
-
-function humour(value){
-  if(value>9500) return "💪 Légende en devenir !";
-  if(value>9000) return "🔥 On chauffe le ladder !";
-  if(value>8500) return "😎 Pas mal, continue !";
-  return "😢 Besoin d’un peu d’entraînement...";
-}
-
 async function updateStats() {
   try {
-    const res = await fetch(url);
+    const res = await fetch('stats.txt'); // lit ton fichier stats.txt
     const text = await res.text();
-    const stats = text.trim().split("\n").map(x=>parseInt(x));
-    
-    for(let i=0;i<3;i++){
-      const fill = document.getElementById("fill"+(i+1));
-      const emoji = document.getElementById("emoji"+(i+1));
-      const humourSpan = document.getElementById("humour"+(i+1));
-      const value = stats[i] || 0;
-      const percent = Math.min(value/10000,1)*100;
-
-      if(value > lastStats[i]) {
-        fill.classList.add("pulse");
-        setTimeout(()=>fill.classList.remove("pulse"),500);
-      }
-
-      fill.style.width = percent+"%";
-      fill.textContent = value;
-      emoji.textContent = value>9000?"😎":"😢";
-      humourSpan.textContent = humour(value);
-      lastStats[i] = value;
-    }
-  } catch(e){
-    console.error("Erreur fetch stats:", e);
+    const lines = text.split('\n');
+    const container = document.getElementById('stats');
+    container.innerHTML = '';
+    lines.forEach(line => {
+      const div = document.createElement('div');
+      div.className = 'stat';
+      div.textContent = line;
+      container.appendChild(div);
+    });
+  } catch (err) {
+    console.error('Erreur lecture stats.txt:', err);
   }
 }
 
-// Actualiser toutes les 10 secondes
+// mise à jour toutes les 5 secondes
 updateStats();
-setInterval(updateStats, 10000);
+setInterval(updateStats, 5000);
 </script>
 
 </body>
