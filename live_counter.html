@@ -1,24 +1,40 @@
-
-        <!DOCTYPE html>
+<!DOCTYPE html>
 <html lang="fr">
 <head>
 <meta charset="UTF-8">
-<title>Compteur Clash Royale</title>
+<title>Compteur Clash Royale Animé</title>
 <style>
-  body { font-family: Arial, sans-serif; background: transparent; color: #fff; }
-  .compte { margin: 5px 0; font-size: 24px; }
-  .bar { display: inline-block; width: 200px; height: 20px; background: #444; margin-left: 10px; border-radius: 5px; overflow: hidden; vertical-align: middle; }
-  .fill { height: 100%; background: #0f0; text-align: right; padding-right: 5px; color: #000; font-weight: bold; line-height: 20px; }
+  body { font-family: Arial, sans-serif; background: transparent; color: white; }
+  .compte { font-size: 24px; margin: 10px 0; }
+  .bar { width: 300px; height: 25px; background: #333; border-radius: 5px; overflow: hidden; display: inline-block; margin-left: 10px; vertical-align: middle; }
+  .fill { height: 100%; text-align: right; padding-right: 5px; font-weight: bold; line-height: 25px; transition: width 1s, background 0.3s; color: #000; }
+  #fill1 { background: #1abc9c; }
+  #fill2 { background: #e74c3c; }
+  #fill3 { background: #3498db; }
+  .pulse { animation: pulse 0.5s; }
+  @keyframes pulse {
+    0% { transform: scaleX(1); }
+    50% { transform: scaleX(1.05); }
+    100% { transform: scaleX(1); }
+  }
 </style>
 </head>
 <body>
 
-<div class="compte" id="c1">C1: <span class="bar"><span class="fill" id="fill1"></span></span> <span id="emoji1"></span></div>
-<div class="compte" id="c2">C2: <span class="bar"><span class="fill" id="fill2"></span></span> <span id="emoji2"></span></div>
-<div class="compte" id="c3">C3: <span class="bar"><span class="fill" id="fill3"></span></span> <span id="emoji3"></span></div>
+<div class="compte" id="c1">C1: <span class="bar"><span class="fill" id="fill1"></span></span> <span id="emoji1"></span> <span id="humour1"></span></div>
+<div class="compte" id="c2">C2: <span class="bar"><span class="fill" id="fill2"></span></span> <span id="emoji2"></span> <span id="humour2"></span></div>
+<div class="compte" id="c3">C3: <span class="bar"><span class="fill" id="fill3"></span></span> <span id="emoji3"></span> <span id="humour3"></span></div>
 
 <script>
 const url = "https://raw.githubusercontent.com/younesand48-spec/Clash-coun/refs/heads/Root/stats.txt";
+let lastStats = [0,0,0];
+
+function humour(value){
+  if(value>9500) return "💪 Légende en devenir !";
+  if(value>9000) return "🔥 On chauffe le ladder !";
+  if(value>8500) return "😎 Pas mal, continue !";
+  return "😢 Besoin d’un peu d’entraînement...";
+}
 
 async function updateStats() {
   try {
@@ -29,18 +45,27 @@ async function updateStats() {
     for(let i=0;i<3;i++){
       const fill = document.getElementById("fill"+(i+1));
       const emoji = document.getElementById("emoji"+(i+1));
-      const value = stats[i];
+      const humourSpan = document.getElementById("humour"+(i+1));
+      const value = stats[i] || 0;
       const percent = Math.min(value/10000,1)*100;
+
+      if(value > lastStats[i]) {
+        fill.classList.add("pulse");
+        setTimeout(()=>fill.classList.remove("pulse"),500);
+      }
+
       fill.style.width = percent+"%";
       fill.textContent = value;
       emoji.textContent = value>9000?"😎":"😢";
+      humourSpan.textContent = humour(value);
+      lastStats[i] = value;
     }
   } catch(e){
     console.error("Erreur fetch stats:", e);
   }
 }
 
-// Mettre à jour toutes les 10 secondes
+// Actualiser toutes les 10 secondes
 updateStats();
 setInterval(updateStats, 10000);
 </script>
