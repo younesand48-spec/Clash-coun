@@ -1,60 +1,49 @@
 
-<!DOCTYPE html>
-<html>
+        <!DOCTYPE html>
+<html lang="fr">
 <head>
-  <title>Compteur Clash Royale</title>
-  <style>
-    body { 
-      font-family: Arial, sans-serif; 
-      text-align: center; 
-      padding: 50px; 
-      background: #1e1e1e; 
-      color: #ffffff; 
-    }
-    .stats { font-size: 28px; margin-bottom: 20px; }
-    .bar { font-size: 36px; }
-    .humeur { font-size: 40px; margin-top: 10px; }
-  </style>
+<meta charset="UTF-8">
+<title>Compteur Clash Royale</title>
+<style>
+  body { font-family: Arial, sans-serif; background: transparent; color: #fff; }
+  .compte { margin: 5px 0; font-size: 24px; }
+  .bar { display: inline-block; width: 200px; height: 20px; background: #444; margin-left: 10px; border-radius: 5px; overflow: hidden; vertical-align: middle; }
+  .fill { height: 100%; background: #0f0; text-align: right; padding-right: 5px; color: #000; font-weight: bold; line-height: 20px; }
+</style>
 </head>
 <body>
-  <div class="stats" id="stats">Chargement...</div>
-  <div class="bar" id="bar">⬛⬛⬛⬛⬛⬛⬛⬛⬛⬛</div>
-  <div class="humeur" id="humeur">😐</div>
 
-  <script>
-    async function fetchStats() {
-      try {
-        // Remplace ce lien par le lien Raw permanent de ton fichier stats.txt
-        const res = await fetch('https://raw.githubusercontent.com/younesand48-spec/Clash-coun/Root/stats.txt');
-        const text = await res.text();
+<div class="compte" id="c1">C1: <span class="bar"><span class="fill" id="fill1"></span></span> <span id="emoji1"></span></div>
+<div class="compte" id="c2">C2: <span class="bar"><span class="fill" id="fill2"></span></span> <span id="emoji2"></span></div>
+<div class="compte" id="c3">C3: <span class="bar"><span class="fill" id="fill3"></span></span> <span id="emoji3"></span></div>
 
-        const winMatch = text.match(/Victoires\s*:\s*(\d+)/i);
-        const loseMatch = text.match(/Défaites\s*:\s*(\d+)/i);
-        let wins = winMatch ? parseInt(winMatch[1]) : 0;
-        let loses = loseMatch ? parseInt(loseMatch[1]) : 0;
-        let total = wins + loses;
+<script>
+const url = "https://raw.githubusercontent.com/younesand48-spec/Clash-coun/refs/heads/Root/stats.txt";
 
-        let rate = total > 0 ? Math.round((wins/total)*100) : 0;
-
-        let filled = total > 0 ? Math.round((wins/total)*10) : 0;
-        let empty = 10 - filled;
-        let bar = '🟩'.repeat(filled) + '⬛'.repeat(empty);
-
-        let humeur = rate > 60 ? '😎' : rate >= 40 ? '😐' : '😢';
-
-        document.getElementById('stats').innerText = `🏆 Victoires : ${wins} | ❌ Défaites : ${loses} | 📊 Winrate : ${rate}%`;
-        document.getElementById('bar').innerText = bar;
-        document.getElementById('humeur').innerText = humeur;
-
-      } catch (e) {
-        document.getElementById('stats').innerText = "Erreur de connexion";
-        document.getElementById('bar').innerText = "⬛⬛⬛⬛⬛⬛⬛⬛⬛⬛";
-        document.getElementById('humeur').innerText = "😐";
-      }
+async function updateStats() {
+  try {
+    const res = await fetch(url);
+    const text = await res.text();
+    const stats = text.trim().split("\n").map(x=>parseInt(x));
+    
+    for(let i=0;i<3;i++){
+      const fill = document.getElementById("fill"+(i+1));
+      const emoji = document.getElementById("emoji"+(i+1));
+      const value = stats[i];
+      const percent = Math.min(value/10000,1)*100;
+      fill.style.width = percent+"%";
+      fill.textContent = value;
+      emoji.textContent = value>9000?"😎":"😢";
     }
+  } catch(e){
+    console.error("Erreur fetch stats:", e);
+  }
+}
 
-    fetchStats();
-    setInterval(fetchStats, 5000);
-  </script>
+// Mettre à jour toutes les 10 secondes
+updateStats();
+setInterval(updateStats, 10000);
+</script>
+
 </body>
 </html>
