@@ -1,41 +1,21 @@
-
 <!DOCTYPE html>
 <html lang="fr">
 <head>
-  <meta charset="UTF-8">
-  <title>Stats Clash Royale</title>
-  <style>
-    body {
-      margin: 0;
-      font-family: Arial, sans-serif;
-      color: white;
-      background: transparent;
-      text-align: center;
-    }
-    #stats {
-      font-size: 28px;
-      margin-bottom: 10px;
-    }
-    #bar-container {
-      width: 300px;
-      height: 25px;
-      background: rgba(255,255,255,0.2);
-      border-radius: 12px;
-      margin: 0 auto;
-      overflow: hidden;
-    }
-    #bar-fill {
-      height: 100%;
-      width: 0;
-      background: linear-gradient(to right, gold, orange);
-      border-radius: 12px;
-      transition: width 1s;
-    }
-    #emoji {
-      font-size: 32px;
-      margin-top: 5px;
-    }
-  </style>
+<meta charset="UTF-8">
+<title>Overlay Clash Royale</title>
+<style>
+  body {
+    margin: 0;
+    font-family: Arial, sans-serif;
+    text-align: center;
+    background: transparent;
+    color: white;
+  }
+  #stats { font-size: 32px; font-weight: bold; margin-bottom:10px; text-shadow:1px 1px 3px black; }
+  #bar-container { width:400px; height:30px; background:rgba(255,255,255,0.2); border-radius:15px; margin:0 auto; overflow:hidden; }
+  #bar-fill { height:100%; width:0; border-radius:15px; transition: width 1s, background 1s; }
+  #emoji { font-size:40px; margin-top:8px; }
+</style>
 </head>
 <body>
 
@@ -46,43 +26,47 @@
 <div id="emoji">😐</div>
 
 <script>
-  const tag = "LC0G99YGU"; // Ton tag Clash Royale
-  const statsDiv = document.getElementById("stats");
-  const barFill = document.getElementById("bar-fill");
-  const emoji = document.getElementById("emoji");
+const statsDiv = document.getElementById("stats");
+const barFill = document.getElementById("bar-fill");
+const emoji = document.getElementById("emoji");
+let lastTrophies = 0;
 
-  let lastTrophies = 0;
+function getColor(trophies) {
+  if (trophies >= 10000) return "linear-gradient(to right, violet, magenta)";
+  if (trophies >= 8000) return "linear-gradient(to right, orange, gold)";
+  if (trophies >= 5000) return "linear-gradient(to right, cyan, blue)";
+  return "linear-gradient(to right, green, lime)";
+}
 
-  async function fetchStats() {
-    try {
-      const res = await fetch(`https://proxy.royaleapi.dev/v1/players/${tag}`);
-      const data = await res.json();
+async function loadStats() {
+  try {
+    const res = await fetch("https://raw.githubusercontent.com/younesand48-spec/Clash-coun/main/stats.txt");
+    const text = await res.text();
+    const lines = text.split("\n");
+    const trophies = parseInt(lines[0].split(":")[1]);
+    const wins = parseInt(lines[1].split(":")[1]);
+    const losses = parseInt(lines[2].split(":")[1]);
+    const ratio = (wins / (wins + losses) * 100).toFixed(1);
 
-      const trophies = data.stats.trophies || 0;
-      const wins = data.stats.wins || 0;
-      const losses = data.stats.losses || 0;
-      const ratio = losses > 0 ? (wins / (wins + losses) * 100).toFixed(1) : wins;
+    statsDiv.textContent = `🏆 ${trophies} | Ratio : ${ratio}%`;
 
-      statsDiv.textContent = `🏆 ${trophies} | Ratio : ${ratio}%`;
+    const percent = Math.min(trophies / 12000 * 100, 100);
+    barFill.style.width = percent + "%";
+    barFill.style.background = getColor(trophies);
 
-      // Barre de trophées (max 12000 pour la visualisation)
-      const percent = Math.min(trophies / 12000 * 100, 100);
-      barFill.style.width = percent + "%";
+    if (trophies > lastTrophies) emoji.textContent = "😃";
+    else if (trophies < lastTrophies) emoji.textContent = "😢";
+    else emoji.textContent = "😐";
 
-      // Emoji dynamique
-      if (trophies > lastTrophies) emoji.textContent = "😃";
-      else if (trophies < lastTrophies) emoji.textContent = "😢";
-      else emoji.textContent = "😐";
-
-      lastTrophies = trophies;
-    } catch (err) {
-      statsDiv.textContent = "Erreur récupération stats";
-      console.error(err);
-    }
+    lastTrophies = trophies;
+  } catch(err) {
+    statsDiv.textContent = "Erreur lecture stats";
+    console.error(err);
   }
+}
 
-  fetchStats();
-  setInterval(fetchStats, 30000); // toutes les 30 sec
+loadStats();
+setInterval(loadStats, 15000); // mise à jour toutes les 15 sec
 </script>
 
 </body>
