@@ -1,1 +1,34 @@
 
+import express from "express";
+import fetch from "node-fetch";
+
+const app = express();
+
+app.get("/", async (req, res) => {
+  try {
+    const r = await fetch(
+      `https://api.clashroyale.com/v1/players/%23${process.env.PLAYER_TAG}`,
+      {
+        headers: {
+          Authorization: `Bearer ${process.env.CLASH_API_KEY}`,
+        },
+      }
+    );
+
+    const d = await r.json();
+
+    const total = d.wins + d.losses;
+    const winrate = total > 0 ? ((d.wins / total) * 100).toFixed(1) : 0;
+
+    res.send(`
+      <body style="background:black;color:white;font-family:Arial;text-align:center">
+        <h1>🏆 ${d.trophies}</h1>
+        <h2>Winrate : ${winrate}%</h2>
+      </body>
+    `);
+  } catch {
+    res.send("Erreur API");
+  }
+});
+
+app.listen(process.env.PORT || 3000);
