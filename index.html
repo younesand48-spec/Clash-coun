@@ -1,23 +1,89 @@
 
-<div id="compteur" style="font-size:32px; color:white; text-align:center;"></div>
+<!DOCTYPE html>
+<html lang="fr">
+<head>
+  <meta charset="UTF-8">
+  <title>Stats Clash Royale</title>
+  <style>
+    body {
+      margin: 0;
+      font-family: Arial, sans-serif;
+      color: white;
+      background: transparent;
+      text-align: center;
+    }
+    #stats {
+      font-size: 28px;
+      margin-bottom: 10px;
+    }
+    #bar-container {
+      width: 300px;
+      height: 25px;
+      background: rgba(255,255,255,0.2);
+      border-radius: 12px;
+      margin: 0 auto;
+      overflow: hidden;
+    }
+    #bar-fill {
+      height: 100%;
+      width: 0;
+      background: linear-gradient(to right, gold, orange);
+      border-radius: 12px;
+      transition: width 1s;
+    }
+    #emoji {
+      font-size: 32px;
+      margin-top: 5px;
+    }
+  </style>
+</head>
+<body>
+
+<div id="stats">Chargement...</div>
+<div id="bar-container">
+  <div id="bar-fill"></div>
+</div>
+<div id="emoji">😐</div>
 
 <script>
-fetch('https://raw.githubusercontent.com/younesand48-spec/Clash-coun/refs/heads/Root/stats.txt')
-  .then(response => response.text())
-  .then(data => {
-    // Supposons que ton stats.txt contient une ligne par compte :
-    // 9511
-    // 8780
-    const lines = data.trim().split('\n');
-    const troph1 = lines[0];
-    const troph2 = lines[1];
+  const tag = "LC0G99YGU"; // Ton tag Clash Royale
+  const statsDiv = document.getElementById("stats");
+  const barFill = document.getElementById("bar-fill");
+  const emoji = document.getElementById("emoji");
 
-    const mood1 = troph1 > 9500 ? "😎 Je gagne !" : "😢 Je perds !"; 
-    const mood2 = troph2 > 8700 ? "😎 Je gagne !" : "😢 Je perds !";
+  let lastTrophies = 0;
 
-    document.getElementById('compteur').innerHTML = 
-      `🏆 Compte 1 : ${troph1} trophées ${mood1}<br>` +
-      `🏆 Compte 2 : ${troph2} trophées ${mood2}`;
-  })
-  .catch(err => console.log("Erreur :", err));
+  async function fetchStats() {
+    try {
+      const res = await fetch(`https://proxy.royaleapi.dev/v1/players/${tag}`);
+      const data = await res.json();
+
+      const trophies = data.stats.trophies || 0;
+      const wins = data.stats.wins || 0;
+      const losses = data.stats.losses || 0;
+      const ratio = losses > 0 ? (wins / (wins + losses) * 100).toFixed(1) : wins;
+
+      statsDiv.textContent = `🏆 ${trophies} | Ratio : ${ratio}%`;
+
+      // Barre de trophées (max 12000 pour la visualisation)
+      const percent = Math.min(trophies / 12000 * 100, 100);
+      barFill.style.width = percent + "%";
+
+      // Emoji dynamique
+      if (trophies > lastTrophies) emoji.textContent = "😃";
+      else if (trophies < lastTrophies) emoji.textContent = "😢";
+      else emoji.textContent = "😐";
+
+      lastTrophies = trophies;
+    } catch (err) {
+      statsDiv.textContent = "Erreur récupération stats";
+      console.error(err);
+    }
+  }
+
+  fetchStats();
+  setInterval(fetchStats, 30000); // toutes les 30 sec
 </script>
+
+</body>
+</html>
