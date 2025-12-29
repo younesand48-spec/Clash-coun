@@ -7,13 +7,13 @@ const app = express();
 app.get("/", async (req, res) => {
   try {
     const r = await fetch(
-      `https://api.clashroyale.com/v1/players/%23${process.env.PLAYER_TAG}`,
+      `https://api.clashroyale.com/v1/players/%23${process.env.LC0G99YGU  `,
       {
         headers: {
-          Authorization: `Bearer ${process.env.CLASH_API_KEY}`,
+          Authorization: `Bearer ${process.env`,eyJ0eXAiOiJKV1QiLCJhbGciOiJIUzUxMiIsImtpZCI6IjI4YTMxOGY3LTAwMDAtYTFlYi03ZmExLTJjNzQzM2M2Y2NhNSJ9.eyJpc3MiOiJzdXBlcmNlbGwiLCJhdWQiOiJzdXBlcmNlbGw6Z2FtZWFwaSIsImp0aSI6IjZmZTM4N2MwLTYwYTYtNGM2MC1iN2JmLTZkNjA0Y2Y2Y2NlZSIsImlhdCI6MTc2NjAxNzE1Niwic3ViIjoiZGV2ZWxvcGVyLzNhY2FlNzAyLTY0ZDQtYWZhNS05ODM4LWQ0ZDM5NGIyZDk0MSIsInNjb3BlcyI6WyJyb3lhbGUiXSwibGltaXRzIjpbeyJ0aWVyIjoiZGV2ZWxvcGVyL3NpbHZlciIsInR5cGUiOiJ0aHJvdHRsaW5nIn0seyJjaWRycyI6WyI4OS45MC4zNS43MiJdLCJ0eXBlIjoiY2xpZW50In1dfQ.yLyiNhpY3py2x6BW5ciBtERosJZgpK1G8W-XpykQMt4sIPv39FNaUhc-r4M02068bgM3b1eTANOADnj-SIMpYA
         },
       }
-    );
+    ); 
 
     const d = await r.json();
 
